@@ -44,7 +44,7 @@ class OllamaAPIAdapter(GenericAPIAdapter):
     """
 
     def __init__(
-        self, endpoint: str, api_key: str, model: str, name: str, max_completion_tokens: int
+        self, api_key: str, model: str, name: str, max_completion_tokens: int, endpoint: str
     ):
         super().__init__(
             endpoint,

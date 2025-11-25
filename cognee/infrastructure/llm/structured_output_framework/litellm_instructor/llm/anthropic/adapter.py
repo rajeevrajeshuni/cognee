@@ -29,7 +29,7 @@ class AnthropicAdapter(GenericAPIAdapter):
     and prompt display.
     """
 
-    def __init__(self, max_completion_tokens: int, model: str, api_key: str):
+    def __init__(self, api_key: str, model: str, max_completion_tokens: int):
         super().__init__(
             None,
             api_key,

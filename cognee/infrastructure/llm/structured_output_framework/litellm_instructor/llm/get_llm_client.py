@@ -96,11 +96,10 @@ def get_llm_client(raise_api_key_error: bool = True):
         )
 
         return OllamaAPIAdapter(
-            llm_config.llm_endpoint,
             llm_config.llm_api_key,
             llm_config.llm_model,
-            "Ollama",
-            max_completion_tokens=max_completion_tokens,
+            max_completion_tokens,
+            llm_config.llm_endpoint,
         )
 
     elif provider == LLMProvider.ANTHROPIC:
@@ -109,7 +108,7 @@ def get_llm_client(raise_api_key_error: bool = True):
         )
 
         return AnthropicAdapter(
-            max_completion_tokens=max_completion_tokens, model=llm_config.llm_model, api_key=llm_config.llm_api_key
+            llm_config.llm_api_key,llm_config.llm_model,max_completion_tokens
         )
 
     elif provider == LLMProvider.CUSTOM:
