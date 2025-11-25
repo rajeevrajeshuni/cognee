@@ -2,7 +2,7 @@ import litellm
 import instructor
 from pydantic import BaseModel
 from typing import Type
-from litellm import JSONSchemaValidationError
+from litellm import JSONSchemaValidationError, transcription
 
 from cognee.shared.logging_utils import get_logger
 from cognee.modules.observability.get_observe import get_observe
@@ -19,6 +19,7 @@ from tenacity import (
     retry_if_not_exception_type,
     before_sleep_log,
 )
+from mistralai import Mistral
 
 logger = get_logger()
 observe = get_observe()
@@ -123,3 +124,42 @@ class MistralAdapter(GenericAPIAdapter):
             logger.error(f"Schema validation failed: {str(e)}")
             logger.debug(f"Raw response: {e.raw_response}")
             raise ValueError(f"Response failed schema validation: {str(e)}")
+
+    @observe(as_type="transcription")
+    @retry(
+        stop=stop_after_delay(128),
+        wait=wait_exponential_jitter(2, 128),
+        retry=retry_if_not_exception_type(litellm.exceptions.NotFoundError),
+        before_sleep=before_sleep_log(logger, logging.DEBUG),
+        reraise=True,
+    )
+    async def create_transcript(self, input):
+        """
+        Generate an audio transcript from a user query.
+
+        This method creates a transcript from the specified audio file.
+        The audio file is processed and the transcription is retrieved from the API.
+
+        Parameters:
+        -----------
+            - input: The path to the audio file that needs to be transcribed.
+
+        Returns:
+        --------
+            The generated transcription of the audio file.
+        """
+        transcription_model = self.transcription_model
+        if self.transcription_model.startswith("mistral"):
+            transcription_model = self.transcription_model.split("/")[-1]
+        file_name = input.split("/")[-1]
+        client = Mistral(api_key=self.api_key)
+        with open(input, "rb") as f:
+            transcription_response = client.audio.transcriptions.complete(
+                model=transcription_model,
+                file={
+                    "content": f,
+                    "file_name": file_name,
+                },
+            )
+        # TODO: We need to standardize return type of create_transcript across different models.
+        return transcription_response
