@@ -22,8 +22,10 @@ from cognee.infrastructure.llm.structured_output_framework.litellm_instructor.ll
     GenericAPIAdapter,
 )
 from cognee.shared.logging_utils import get_logger
+from cognee.modules.observability.get_observe import get_observe
 
 logger = get_logger()
+observe = get_observe()
 
 
 class GeminiAdapter(GenericAPIAdapter):
@@ -68,6 +70,7 @@ class GeminiAdapter(GenericAPIAdapter):
         # Override the default instructor mode for Gemini
         self.aclient = instructor.from_litellm(litellm.acompletion, mode=instructor.Mode.JSON)
 
+    @observe(as_type="generation")
     @retry(
         stop=stop_after_delay(128),
         wait=wait_exponential_jitter(2, 128),

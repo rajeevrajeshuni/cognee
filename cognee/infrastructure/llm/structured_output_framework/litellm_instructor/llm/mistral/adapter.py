@@ -50,6 +50,7 @@ class MistralAdapter(LLMInterface):
             api_key=get_llm_config().llm_api_key,
         )
 
+    @observe(as_type="generation")
     @retry(
         stop=stop_after_delay(128),
         wait=wait_exponential_jitter(2, 128),

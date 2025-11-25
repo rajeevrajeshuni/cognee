@@ -5,6 +5,7 @@ import litellm
 import instructor
 import anthropic
 from cognee.shared.logging_utils import get_logger
+from cognee.modules.observability.get_observe import get_observe
 from tenacity import (
     retry,
     stop_after_delay,
@@ -19,6 +20,7 @@ from cognee.infrastructure.llm.structured_output_framework.litellm_instructor.ll
 from cognee.infrastructure.llm.config import get_llm_config
 
 logger = get_logger()
+observe = get_observe()
 
 
 class AnthropicAdapter(LLMInterface):
@@ -30,7 +32,7 @@ class AnthropicAdapter(LLMInterface):
     name = "Anthropic"
     model: str
 
-    def __init__(self, max_completion_tokens: int, model: str = None):
+    def __init__(self, max_completion_tokens: int, model: str):
         self.aclient = instructor.patch(
             create=anthropic.AsyncAnthropic(api_key=get_llm_config().llm_api_key).messages.create,
             mode=instructor.Mode.ANTHROPIC_TOOLS,
@@ -39,6 +41,7 @@ class AnthropicAdapter(LLMInterface):
         self.model = model
         self.max_completion_tokens = max_completion_tokens
 
+    @observe(as_type="generation")
     @retry(
         stop=stop_after_delay(128),
         wait=wait_exponential_jitter(2, 128),

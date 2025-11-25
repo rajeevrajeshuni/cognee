@@ -75,6 +75,7 @@ class GenericAPIAdapter(LLMInterface):
 
         self.aclient = instructor.from_litellm(litellm.acompletion, mode=instructor.Mode.JSON)
 
+    @observe(as_type="generation")
     @retry(
         stop=stop_after_delay(128),
         wait=wait_exponential_jitter(2, 128),
@@ -175,6 +176,7 @@ class GenericAPIAdapter(LLMInterface):
                         f"The provided input contains content that is not aligned with our content policy: {text_input}"
                     ) from error
 
+    @observe(as_type="transcription")
     @retry(
         stop=stop_after_delay(128),
         wait=wait_exponential_jitter(2, 128),
@@ -226,6 +228,7 @@ class GenericAPIAdapter(LLMInterface):
             max_retries=self.MAX_RETRIES,
         )
 
+    @observe(as_type="transcribe_image")
     @retry(
         stop=stop_after_delay(128),
         wait=wait_exponential_jitter(2, 128),
