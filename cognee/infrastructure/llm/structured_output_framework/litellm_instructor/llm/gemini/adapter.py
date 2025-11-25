@@ -55,16 +55,16 @@ class GeminiAdapter(GenericAPIAdapter):
         fallback_endpoint: str = None,
     ):
         super().__init__(
-            endpoint,
-            api_key,
-            api_version,
-            model,
-            "Gemini",
-            max_completion_tokens,
-            fallback_model,
-            transcription_model,
-            fallback_api_key,
-            fallback_endpoint,
+            api_key=api_key,
+            model=model,
+            max_completion_tokens=max_completion_tokens,
+            name="Gemini",
+            endpoint=endpoint,
+            api_version=api_version,
+            transcription_model=transcription_model,
+            fallback_model=fallback_model,
+            fallback_api_key=fallback_api_key,
+            fallback_endpoint=fallback_endpoint,
         )
 
         # Override the default instructor mode for Gemini

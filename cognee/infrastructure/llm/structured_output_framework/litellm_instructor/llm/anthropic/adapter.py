@@ -31,12 +31,10 @@ class AnthropicAdapter(GenericAPIAdapter):
 
     def __init__(self, api_key: str, model: str, max_completion_tokens: int):
         super().__init__(
-            None,
-            api_key,
-            None,
-            model,
-            "Anthropic",
-            max_completion_tokens,
+            api_key=api_key,
+            model=model,
+            max_completion_tokens=max_completion_tokens,
+            name="Anthropic",
         )
         self.aclient = instructor.patch(
             create=anthropic.AsyncAnthropic(api_key=api_key).messages.create,

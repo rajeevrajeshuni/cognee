@@ -47,12 +47,11 @@ class OllamaAPIAdapter(GenericAPIAdapter):
         self, api_key: str, model: str, name: str, max_completion_tokens: int, endpoint: str
     ):
         super().__init__(
-            endpoint,
-            api_key,
-            None,
-            model,
-            "Ollama",
-            max_completion_tokens,
+            api_key=api_key,
+            model=model,
+            max_completion_tokens=max_completion_tokens,
+            name="Ollama",
+            endpoint=endpoint,
         )
 
         self.aclient = instructor.from_openai(

@@ -69,16 +69,16 @@ class OpenAIAdapter(GenericAPIAdapter):
         fallback_endpoint: str = None,
     ):
         super().__init__(
-            endpoint,
-            api_key,
-            api_version,
-            model,
-            "OpenAI",
-            max_completion_tokens,
-            fallback_model,
-            transcription_model,
-            fallback_api_key,
-            fallback_endpoint,
+            api_key=api_key,
+            model=model,
+            max_completion_tokens=max_completion_tokens,
+            name="OpenAI",
+            endpoint=endpoint,
+            api_version=api_version,
+            transcription_model=transcription_model,
+            fallback_model=fallback_model,
+            fallback_api_key=fallback_api_key,
+            fallback_endpoint=fallback_endpoint,
         )
 
         # TODO: With gpt5 series models OpenAI expects JSON_SCHEMA as a mode for structured outputs.

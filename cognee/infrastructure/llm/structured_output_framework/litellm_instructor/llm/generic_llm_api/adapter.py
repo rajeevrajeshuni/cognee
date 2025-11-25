@@ -51,14 +51,14 @@ class GenericAPIAdapter(LLMInterface):
 
     def __init__(
         self,
-        endpoint,
         api_key: str,
-        api_version: str,
         model: str,
-        name: str,
         max_completion_tokens: int,
-        fallback_model: str = None,
+        name: str,
+        endpoint: str = None,
+        api_version: str = None,
         transcription_model: str = None,
+        fallback_model: str = None,
         fallback_api_key: str = None,
         fallback_endpoint: str = None,
     ):
