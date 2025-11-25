@@ -123,6 +123,7 @@ def get_llm_client(raise_api_key_error: bool = True):
         return GenericAPIAdapter(
             llm_config.llm_endpoint,
             llm_config.llm_api_key,
+            llm_config.llm_api_version,
             llm_config.llm_model,
             "Custom",
             max_completion_tokens=max_completion_tokens,
@@ -145,21 +146,6 @@ def get_llm_client(raise_api_key_error: bool = True):
             max_completion_tokens=max_completion_tokens,
             endpoint=llm_config.llm_endpoint,
             api_version=llm_config.llm_api_version,
-        )
-
-    elif provider == LLMProvider.MISTRAL:
-        if llm_config.llm_api_key is None:
-            raise LLMAPIKeyNotSetError()
-
-        from cognee.infrastructure.llm.structured_output_framework.litellm_instructor.llm.mistral.adapter import (
-            MistralAdapter,
-        )
-
-        return MistralAdapter(
-            api_key=llm_config.llm_api_key,
-            model=llm_config.llm_model,
-            max_completion_tokens=max_completion_tokens,
-            endpoint=llm_config.llm_endpoint,
         )
 
     elif provider == LLMProvider.MISTRAL:

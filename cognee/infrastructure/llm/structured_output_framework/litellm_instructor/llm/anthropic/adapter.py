@@ -3,6 +3,7 @@ from typing import Type
 from pydantic import BaseModel
 import litellm
 import instructor
+import anthropic
 from cognee.shared.logging_utils import get_logger
 from tenacity import (
     retry,
@@ -30,8 +31,6 @@ class AnthropicAdapter(LLMInterface):
     model: str
 
     def __init__(self, max_completion_tokens: int, model: str = None):
-        import anthropic
-
         self.aclient = instructor.patch(
             create=anthropic.AsyncAnthropic(api_key=get_llm_config().llm_api_key).messages.create,
             mode=instructor.Mode.ANTHROPIC_TOOLS,

@@ -1,4 +1,4 @@
-"""Adapter for Generic API LLM provider API"""
+"""Adapter for Gemini API LLM provider"""
 
 import litellm
 import instructor
@@ -8,12 +8,7 @@ from openai import ContentFilterFinishReasonError
 from litellm.exceptions import ContentPolicyViolationError
 from instructor.core import InstructorRetryException
 
-from cognee.infrastructure.llm.exceptions import ContentPolicyFilterError
-from cognee.infrastructure.llm.structured_output_framework.litellm_instructor.llm.llm_interface import (
-    LLMInterface,
-)
 import logging
-from cognee.shared.logging_utils import get_logger
 from tenacity import (
     retry,
     stop_after_delay,
@@ -22,47 +17,55 @@ from tenacity import (
     before_sleep_log,
 )
 
+from cognee.infrastructure.llm.exceptions import ContentPolicyFilterError
+from cognee.infrastructure.llm.structured_output_framework.litellm_instructor.llm.generic_llm_api.adapter import (
+    GenericAPIAdapter,
+)
+from cognee.shared.logging_utils import get_logger
+
 logger = get_logger()
 
 
-class GeminiAdapter(LLMInterface):
+class GeminiAdapter(GenericAPIAdapter):
     """
     Adapter for Gemini API LLM provider.
 
     This class initializes the API adapter with necessary credentials and configurations for
     interacting with the gemini LLM models. It provides methods for creating structured outputs
-    based on user input and system prompts.
+    based on user input and system prompts, as well as multimodal processing capabilities.
 
     Public methods:
-    - acreate_structured_output(text_input: str, system_prompt: str, response_model:
-    Type[BaseModel]) -> BaseModel
+    - acreate_structured_output(text_input: str, system_prompt: str, response_model: Type[BaseModel]) -> BaseModel
+    - create_transcript(input) -> BaseModel: Transcribe audio files to text
+    - transcribe_image(input) -> BaseModel: Inherited from GenericAPIAdapter
     """
-
-    name: str
-    model: str
-    api_key: str
 
     def __init__(
         self,
-        endpoint,
         api_key: str,
         model: str,
-        api_version: str,
         max_completion_tokens: int,
+        endpoint: str = None,
+        api_version: str = None,
+        transcription_model: str = None,
         fallback_model: str = None,
         fallback_api_key: str = None,
         fallback_endpoint: str = None,
     ):
-        self.model = model
-        self.api_key = api_key
-        self.endpoint = endpoint
-        self.api_version = api_version
-        self.max_completion_tokens = max_completion_tokens
+        super().__init__(
+            endpoint,
+            api_key,
+            api_version,
+            model,
+            "Gemini",
+            max_completion_tokens,
+            fallback_model,
+            transcription_model,
+            fallback_api_key,
+            fallback_endpoint,
+        )
 
-        self.fallback_model = fallback_model
-        self.fallback_api_key = fallback_api_key
-        self.fallback_endpoint = fallback_endpoint
-
+        # Override the default instructor mode for Gemini
         self.aclient = instructor.from_litellm(litellm.acompletion, mode=instructor.Mode.JSON)
 
     @retry(
@@ -112,7 +115,7 @@ class GeminiAdapter(LLMInterface):
                     },
                 ],
                 api_key=self.api_key,
-                max_retries=5,
+                max_retries=self.MAX_RETRIES,
                 api_base=self.endpoint,
                 api_version=self.api_version,
                 response_model=response_model,
@@ -146,7 +149,7 @@ class GeminiAdapter(LLMInterface):
                             "content": system_prompt,
                         },
                     ],
-                    max_retries=5,
+                    max_retries=self.MAX_RETRIES,
                     api_key=self.fallback_api_key,
                     api_base=self.fallback_endpoint,
                     response_model=response_model,
