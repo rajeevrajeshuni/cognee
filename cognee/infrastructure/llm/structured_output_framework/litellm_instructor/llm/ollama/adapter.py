@@ -5,10 +5,6 @@ import instructor
 from typing import Type
 from openai import OpenAI
 from pydantic import BaseModel
-
-from cognee.infrastructure.llm.structured_output_framework.litellm_instructor.llm.llm_interface import (
-    LLMInterface,
-)
 from cognee.infrastructure.files.utils.open_data_file import open_data_file
 from cognee.shared.logging_utils import get_logger
 from cognee.modules.observability.get_observe import get_observe
