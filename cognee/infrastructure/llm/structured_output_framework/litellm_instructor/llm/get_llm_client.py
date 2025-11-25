@@ -107,9 +107,7 @@ def get_llm_client(raise_api_key_error: bool = True):
             AnthropicAdapter,
         )
 
-        return AnthropicAdapter(
-            llm_config.llm_api_key,llm_config.llm_model,max_completion_tokens
-        )
+        return AnthropicAdapter(llm_config.llm_api_key, llm_config.llm_model, max_completion_tokens)
 
     elif provider == LLMProvider.CUSTOM:
         if llm_config.llm_api_key is None and raise_api_key_error:

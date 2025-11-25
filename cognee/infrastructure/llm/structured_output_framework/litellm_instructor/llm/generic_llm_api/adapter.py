@@ -205,8 +205,10 @@ class GenericAPIAdapter(LLMInterface):
         async with open_data_file(input, mode="rb") as audio_file:
             encoded_string = base64.b64encode(audio_file.read()).decode("utf-8")
         mime_type, _ = mimetypes.guess_type(input)
-        if not mime_type or not mime_type.startswith('audio/'):
-            raise ValueError(f"Could not determine MIME type for audio file: {input}. Is the extension correct?")
+        if not mime_type or not mime_type.startswith("audio/"):
+            raise ValueError(
+                f"Could not determine MIME type for audio file: {input}. Is the extension correct?"
+            )
         return litellm.completion(
             model=self.transcription_model,
             messages=[
@@ -215,12 +217,10 @@ class GenericAPIAdapter(LLMInterface):
                     "content": [
                         {
                             "type": "file",
-                            "file": {
-                                "file_data": f"data:{mime_type};base64,{encoded_string}"
-                            }
+                            "file": {"file_data": f"data:{mime_type};base64,{encoded_string}"},
                         },
-                        {"type": "text", "text": "Transcribe the following audio precisely."}
-                    ]
+                        {"type": "text", "text": "Transcribe the following audio precisely."},
+                    ],
                 }
             ],
             api_key=self.api_key,
@@ -257,8 +257,10 @@ class GenericAPIAdapter(LLMInterface):
         async with open_data_file(input, mode="rb") as image_file:
             encoded_image = base64.b64encode(image_file.read()).decode("utf-8")
         mime_type, _ = mimetypes.guess_type(input)
-        if not mime_type or not mime_type.startswith('image/'):
-            raise ValueError(f"Could not determine MIME type for image file: {input}. Is the extension correct?")
+        if not mime_type or not mime_type.startswith("image/"):
+            raise ValueError(
+                f"Could not determine MIME type for image file: {input}. Is the extension correct?"
+            )
         return litellm.completion(
             model=self.image_transcribe_model,
             messages=[

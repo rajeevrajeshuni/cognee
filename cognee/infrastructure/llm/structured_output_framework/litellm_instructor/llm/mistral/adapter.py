@@ -33,7 +33,15 @@ class MistralAdapter(GenericAPIAdapter):
     - show_prompt
     """
 
-    def __init__(self, api_key: str, model: str, max_completion_tokens: int, endpoint: str = None, transcription_model: str = None, image_transcribe_model: str = None):
+    def __init__(
+        self,
+        api_key: str,
+        model: str,
+        max_completion_tokens: int,
+        endpoint: str = None,
+        transcription_model: str = None,
+        image_transcribe_model: str = None,
+    ):
         from mistralai import Mistral
 
         super().__init__(
@@ -43,7 +51,7 @@ class MistralAdapter(GenericAPIAdapter):
             name="Mistral",
             endpoint=endpoint,
             transcription_model=transcription_model,
-            image_transcribe_model=image_transcribe_model
+            image_transcribe_model=image_transcribe_model,
         )
 
         self.aclient = instructor.from_litellm(

@@ -225,4 +225,5 @@ class OpenAIAdapter(GenericAPIAdapter):
             )
 
         return transcription
-    #transcribe image inherited from GenericAdapter
+
+    # transcribe image inherited from GenericAdapter
