@@ -42,6 +42,8 @@ class GeminiAdapter(GenericAPIAdapter):
     - transcribe_image(input) -> BaseModel: Inherited from GenericAPIAdapter
     """
 
+    default_instructor_mode = "json_mode"
+
     def __init__(
         self,
         api_key: str,
@@ -50,6 +52,7 @@ class GeminiAdapter(GenericAPIAdapter):
         endpoint: str = None,
         api_version: str = None,
         transcription_model: str = None,
+        instructor_mode: str = None,
         fallback_model: str = None,
         fallback_api_key: str = None,
         fallback_endpoint: str = None,
@@ -66,9 +69,11 @@ class GeminiAdapter(GenericAPIAdapter):
             fallback_api_key=fallback_api_key,
             fallback_endpoint=fallback_endpoint,
         )
+        self.instructor_mode = instructor_mode if instructor_mode else self.default_instructor_mode
 
-        # Override the default instructor mode for Gemini
-        self.aclient = instructor.from_litellm(litellm.acompletion, mode=instructor.Mode.JSON)
+        self.aclient = instructor.from_litellm(
+            litellm.acompletion, mode=instructor.Mode(self.instructor_mode)
+        )
 
     @observe(as_type="generation")
     @retry(

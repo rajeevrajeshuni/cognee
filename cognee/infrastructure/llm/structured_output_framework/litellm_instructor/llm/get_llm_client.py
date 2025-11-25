@@ -81,6 +81,7 @@ def get_llm_client(raise_api_key_error: bool = True):
             model=llm_config.llm_model,
             transcription_model=llm_config.transcription_model,
             max_completion_tokens=max_completion_tokens,
+            instructor_mode=llm_config.llm_instructor_mode.lower(),
             streaming=llm_config.llm_streaming,
             fallback_api_key=llm_config.fallback_api_key,
             fallback_endpoint=llm_config.fallback_endpoint,
@@ -100,6 +101,7 @@ def get_llm_client(raise_api_key_error: bool = True):
             llm_config.llm_model,
             max_completion_tokens,
             llm_config.llm_endpoint,
+            instructor_mode=llm_config.llm_instructor_mode.lower(),
         )
 
     elif provider == LLMProvider.ANTHROPIC:
@@ -107,7 +109,12 @@ def get_llm_client(raise_api_key_error: bool = True):
             AnthropicAdapter,
         )
 
-        return AnthropicAdapter(llm_config.llm_api_key, llm_config.llm_model, max_completion_tokens)
+        return AnthropicAdapter(
+            llm_config.llm_api_key,
+            llm_config.llm_model,
+            max_completion_tokens,
+            instructor_mode=llm_config.llm_instructor_mode.lower(),
+        )
 
     elif provider == LLMProvider.CUSTOM:
         if llm_config.llm_api_key is None and raise_api_key_error:
@@ -122,8 +129,7 @@ def get_llm_client(raise_api_key_error: bool = True):
             llm_config.llm_model,
             max_completion_tokens,
             "Custom",
-            endpoint=llm_config.llm_endpoint,
-            api_version=llm_config.llm_api_version,
+            instructor_mode=llm_config.llm_instructor_mode.lower(),
             fallback_api_key=llm_config.fallback_api_key,
             fallback_endpoint=llm_config.fallback_endpoint,
             fallback_model=llm_config.fallback_model,
@@ -143,6 +149,7 @@ def get_llm_client(raise_api_key_error: bool = True):
             max_completion_tokens=max_completion_tokens,
             endpoint=llm_config.llm_endpoint,
             api_version=llm_config.llm_api_version,
+            instructor_mode=llm_config.llm_instructor_mode.lower(),
         )
 
     elif provider == LLMProvider.MISTRAL:
@@ -158,6 +165,7 @@ def get_llm_client(raise_api_key_error: bool = True):
             model=llm_config.llm_model,
             max_completion_tokens=max_completion_tokens,
             endpoint=llm_config.llm_endpoint,
+            instructor_mode=llm_config.llm_instructor_mode.lower(),
         )
 
     else:

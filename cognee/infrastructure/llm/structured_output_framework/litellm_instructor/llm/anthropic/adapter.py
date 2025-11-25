@@ -29,16 +29,22 @@ class AnthropicAdapter(GenericAPIAdapter):
     and prompt display.
     """
 
-    def __init__(self, api_key: str, model: str, max_completion_tokens: int):
+    default_instructor_mode = "anthropic_tools"
+
+    def __init__(
+        self, api_key: str, model: str, max_completion_tokens: int, instructor_mode: str = None
+    ):
         super().__init__(
             api_key=api_key,
             model=model,
             max_completion_tokens=max_completion_tokens,
             name="Anthropic",
         )
+        self.instructor_mode = instructor_mode if instructor_mode else self.default_instructor_mode
+
         self.aclient = instructor.patch(
-            create=anthropic.AsyncAnthropic(api_key=api_key).messages.create,
-            mode=instructor.Mode.ANTHROPIC_TOOLS,
+            create=anthropic.AsyncAnthropic(api_key=get_llm_config().llm_api_key).messages.create,
+            mode=instructor.Mode(self.instructor_mode),
         )
 
     @observe(as_type="generation")

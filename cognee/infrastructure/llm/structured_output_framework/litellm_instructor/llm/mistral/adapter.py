@@ -33,6 +33,8 @@ class MistralAdapter(GenericAPIAdapter):
     - show_prompt
     """
 
+    default_instructor_mode = "mistral_tools"
+
     def __init__(
         self,
         api_key: str,
@@ -41,6 +43,7 @@ class MistralAdapter(GenericAPIAdapter):
         endpoint: str = None,
         transcription_model: str = None,
         image_transcribe_model: str = None,
+        instructor_mode: str = None,
     ):
         from mistralai import Mistral
 
@@ -54,9 +57,11 @@ class MistralAdapter(GenericAPIAdapter):
             image_transcribe_model=image_transcribe_model,
         )
 
+        self.instructor_mode = instructor_mode if instructor_mode else self.default_instructor_mode
+
         self.aclient = instructor.from_litellm(
             litellm.acompletion,
-            mode=instructor.Mode.MISTRAL_TOOLS,
+            mode=instructor.Mode(self.instructor_mode),
             api_key=get_llm_config().llm_api_key,
         )
 

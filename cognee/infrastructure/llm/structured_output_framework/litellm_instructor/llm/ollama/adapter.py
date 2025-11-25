@@ -43,8 +43,16 @@ class OllamaAPIAdapter(GenericAPIAdapter):
     - aclient
     """
 
+    default_instructor_mode = "json_mode"
+
     def __init__(
-        self, api_key: str, model: str, name: str, max_completion_tokens: int, endpoint: str
+        self,
+        api_key: str,
+        model: str,
+        name: str,
+        max_completion_tokens: int,
+        endpoint: str,
+        instructor_mode: str = None,
     ):
         super().__init__(
             api_key=api_key,
@@ -54,8 +62,11 @@ class OllamaAPIAdapter(GenericAPIAdapter):
             endpoint=endpoint,
         )
 
+        self.instructor_mode = instructor_mode if instructor_mode else self.default_instructor_mode
+
         self.aclient = instructor.from_openai(
-            OpenAI(base_url=self.endpoint, api_key=self.api_key), mode=instructor.Mode.JSON
+            OpenAI(base_url=self.endpoint, api_key=self.api_key),
+            mode=instructor.Mode(self.instructor_mode),
         )
 
     @observe(as_type="generation")
