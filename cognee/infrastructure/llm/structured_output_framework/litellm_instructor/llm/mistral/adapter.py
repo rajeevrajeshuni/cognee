@@ -6,8 +6,8 @@ from litellm import JSONSchemaValidationError
 
 from cognee.shared.logging_utils import get_logger
 from cognee.modules.observability.get_observe import get_observe
-from cognee.infrastructure.llm.structured_output_framework.litellm_instructor.llm.llm_interface import (
-    LLMInterface,
+from cognee.infrastructure.llm.structured_output_framework.litellm_instructor.llm.generic_llm_api.adapter import (
+    GenericAPIAdapter,
 )
 from cognee.infrastructure.llm.config import get_llm_config
 
@@ -24,7 +24,7 @@ logger = get_logger()
 observe = get_observe()
 
 
-class MistralAdapter(LLMInterface):
+class MistralAdapter(GenericAPIAdapter):
     """
     Adapter for Mistral AI API, for structured output generation and prompt display.
 
@@ -33,16 +33,18 @@ class MistralAdapter(LLMInterface):
     - show_prompt
     """
 
-    name = "Mistral"
-    model: str
-    api_key: str
-    max_completion_tokens: int
-
-    def __init__(self, api_key: str, model: str, max_completion_tokens: int, endpoint: str = None):
+    def __init__(self, api_key: str, model: str, max_completion_tokens: int, endpoint: str = None, transcription_model: str = None, image_transcribe_model: str = None):
         from mistralai import Mistral
 
-        self.model = model
-        self.max_completion_tokens = max_completion_tokens
+        super().__init__(
+            api_key=api_key,
+            model=model,
+            max_completion_tokens=max_completion_tokens,
+            name="Mistral",
+            endpoint=endpoint,
+            transcription_model=transcription_model,
+            image_transcribe_model=image_transcribe_model
+        )
 
         self.aclient = instructor.from_litellm(
             litellm.acompletion,

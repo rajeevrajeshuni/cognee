@@ -58,6 +58,7 @@ class GenericAPIAdapter(LLMInterface):
         endpoint: str = None,
         api_version: str = None,
         transcription_model: str = None,
+        image_transcribe_model: str = None,
         fallback_model: str = None,
         fallback_api_key: str = None,
         fallback_endpoint: str = None,
@@ -69,6 +70,7 @@ class GenericAPIAdapter(LLMInterface):
         self.endpoint = endpoint
         self.max_completion_tokens = max_completion_tokens
         self.transcription_model = transcription_model or model
+        self.image_transcribe_model = image_transcribe_model or model
         self.fallback_model = fallback_model
         self.fallback_api_key = fallback_api_key
         self.fallback_endpoint = fallback_endpoint
@@ -258,7 +260,7 @@ class GenericAPIAdapter(LLMInterface):
         if not mime_type or not mime_type.startswith('image/'):
             raise ValueError(f"Could not determine MIME type for image file: {input}. Is the extension correct?")
         return litellm.completion(
-            model=self.model,
+            model=self.image_transcribe_model,
             messages=[
                 {
                     "role": "user",
